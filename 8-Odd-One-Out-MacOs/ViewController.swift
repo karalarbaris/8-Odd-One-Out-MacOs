@@ -14,10 +14,13 @@ class ViewController: NSViewController {
     let gridSize = 10
     let gridMargin: CGFloat = 5
     
+    var images = ["elephant", "giraffe", "hippo", "monkey", "panda", "parrot", "penguin", "pig", "rabbit", "snake"]
+    let currentLevel = 1
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        createLevel()
         
-        // Do any additional setup after loading the view.
     }
     
     override var representedObject: Any? {
@@ -75,22 +78,21 @@ class ViewController: NSViewController {
             }
             
             rows.append(row)
-           
+            
         }
-    
+        
         return rows
     }
     
     
     func createButton() -> NSButton {
         let button = NSButton(frame: NSRect(x: 0, y: 0, width: 64, height: 64))
-        button.image = NSImage(named: "penguin")
         button.setButtonType(.momentaryChange)
         button.imagePosition = .imageOnly
         button.focusRingType = .none
         button.isBordered = false
         
-//        button.action = #selector(imageClicked)
+        //        button.action = #selector(imageClicked)
         button.target = self
         
         return button
@@ -117,6 +119,67 @@ class ViewController: NSViewController {
             gridView.column(at: i).width = 64
         }
         
+    }
+    
+    
+    func generateLayout(items: Int) {
+        // reset the game board
+        for button in gridViewButtons {
+            button.tag = 0
+            button.image = nil
+        }
+        
+        // randomize the buttons and animal images
+        gridViewButtons.shuffle()
+        images.shuffle()
+        
+        // create our two properties to place animals in pairs
+        var numUsed = 0
+        var itemCount = 1
+        
+        // create the odd animal by hand, giving it the tag 2, "correct answer"
+        let firstButton = gridViewButtons[0]
+        firstButton.tag = 2
+        firstButton.image = NSImage(named: images[0])
+        // now create all the rest of the animals
+        for i in 1 ..< items {
+            
+            // pull out the button at this location and give it the tag 1, "wrong answer"
+            let currentButton = gridViewButtons[i]
+            currentButton.tag = 1
+            
+            // set its image to be the current animal
+            currentButton.image = NSImage(named: images[itemCount])
+            
+            // mark that we've placed another animal in this pair
+            numUsed += 1
+            
+            // if we have placed two animals of this type
+            if (numUsed == 2) {
+                // reset the counter
+                numUsed = 0
+                
+                // place the next animal type
+                itemCount += 1
+            }
+            // if we've reached the end of the animal types
+            if (itemCount == images.count) {
+                // go back to the start – 1, not 0, because we don't want to place the odd animal
+                itemCount = 1
+            }
+        }
+    }
+    
+    func createLevel() {
+        switch currentLevel {
+        case 1:
+            generateLayout(items: 5)
+        default:
+            gameOver()
+        }
+    }
+    
+    func gameOver() {
     }
     
 }
