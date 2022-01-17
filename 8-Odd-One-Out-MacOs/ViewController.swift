@@ -15,7 +15,7 @@ class ViewController: NSViewController {
     let gridMargin: CGFloat = 5
     
     var images = ["elephant", "giraffe", "hippo", "monkey", "panda", "parrot", "penguin", "pig", "rabbit", "snake"]
-    let currentLevel = 1
+    var currentLevel = 1
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -92,7 +92,7 @@ class ViewController: NSViewController {
         button.focusRingType = .none
         button.isBordered = false
         
-        //        button.action = #selector(imageClicked)
+        button.action = #selector(imageClicked)
         button.target = self
         
         return button
@@ -182,5 +182,24 @@ class ViewController: NSViewController {
     func gameOver() {
     }
     
+    @objc func imageClicked(_ sender: NSButton) {
+        // bail out if the user clicked an invisible button
+        guard sender.tag != 0 else { return }
+        if sender.tag == 1 {
+            // they clicked the wrong animal
+            if currentLevel > 1 {
+                // take the current level down by 1 if we can
+                currentLevel -= 1
+            }
+            // create a new layout
+            createLevel()
+        } else {
+            // they clicked the correct animal
+            if currentLevel < 9 {
+                // take the current level up by 1 if we can
+                currentLevel += 1
+                createLevel()
+            } }
+    }
 }
 
