@@ -17,9 +17,16 @@ class ViewController: NSViewController {
     var images = ["elephant", "giraffe", "hippo", "monkey", "panda", "parrot", "penguin", "pig", "rabbit", "snake"]
     var currentLevel = 1
     
+    var observer: NSKeyValueObservation?
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         createLevel()
+        
+        observer = NSApp.observe(\.effectiveAppearance) { (app, _) in
+            self.appearanceChanged()
+        }
         
     }
     
@@ -36,6 +43,8 @@ class ViewController: NSViewController {
         visualEffectView.translatesAutoresizingMaskIntoConstraints = false
         
         visualEffectView.state = .active
+        visualEffectView.material = .underWindowBackground
+        
         view.addSubview(visualEffectView)
         
         visualEffectView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
@@ -52,7 +61,7 @@ class ViewController: NSViewController {
         
         let title = NSTextField(labelWithString: "Odd One Out")
         title.font = NSFont.systemFont(ofSize: 36, weight: .thin)
-        title.textColor = NSColor.white
+        title.textColor = NSColor.labelColor
         title.translatesAutoresizingMaskIntoConstraints = false
         
         visualEffectView.addSubview(title)
@@ -200,6 +209,11 @@ class ViewController: NSViewController {
                 currentLevel += 1
                 createLevel()
             } }
+    }
+    
+    func appearanceChanged() {
+        let darkMode = NSApp.effectiveAppearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
+        print(darkMode)
     }
 }
 
